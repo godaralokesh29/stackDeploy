@@ -1,6 +1,6 @@
 const MAX_LEN=5;
 
- function generate() {
+ export function generate() {
     let ans="";
     let string ="123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     for(let i=0;i<MAX_LEN;i++){
