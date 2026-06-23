@@ -3,7 +3,20 @@ import cors from "cors";
 import simpleGit from "simple-git";
 import { generate } from "./utils";
 import path from "path";
+import dotenv from "dotenv";
+dotenv.config();
+
 import {getALLFiles} from "./file";
+import {uploadFile} from "./aws"
+
+console.log({
+  region: process.env.AWS_REGION,
+  accessKeyExists: !!process.env.AWS_ACCESS_KEY_ID,
+  secretExists: !!process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyLength: process.env.AWS_ACCESS_KEY_ID?.length,
+  secretLength: process.env.AWS_SECRET_ACCESS_KEY?.length,
+});
+
 
 
 const app =express();
