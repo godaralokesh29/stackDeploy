@@ -6,6 +6,7 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 
+
 import {getALLFiles} from "./file";
 import {uploadFile} from "./aws"
 
@@ -31,6 +32,15 @@ app.post("/deploy",async (req,res)=>{
     await simpleGit().clone(repoUrl,path.join(__dirname,`output/${id}`))
     const file = getALLFiles(path.join(__dirname,`output/${id}`))
     //put this in S3
+    const rootFolder = path.join(__dirname, `output/${id}`);
+    for (const filePath of file) {
+    const relativePath = path.relative(rootFolder, filePath);
+
+    await uploadFile(
+        `${id}/${relativePath}`,
+        filePath
+    );
+}
     console.log(file)
 
     res.json({id})

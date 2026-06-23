@@ -24,6 +24,7 @@ export const uploadFile = async (
       Body: fileContent,
     })
   );
+  console.log(response);
 
   return response;
 };
