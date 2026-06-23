@@ -5,6 +5,10 @@ import { generate } from "./utils";
 import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
+import { createClient } from "redis";
+const publisher = createClient();
+publisher.connect();
+
 
 
 import {getALLFiles} from "./file";
@@ -41,6 +45,8 @@ app.post("/deploy",async (req,res)=>{
         filePath
     );
 }
+
+    publisher.lPush("build-queue", id);
     console.log(file)
 
     res.json({id})
