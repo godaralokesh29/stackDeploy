@@ -1,15 +1,17 @@
-import { createClient, commandOptions } from "redis";
-import { copyFinalDist, downloadS3Folder } from "./aws";
-import { buildProject } from "./utils";
+import { createClient } from "redis";
+
+const subscriber = createClient();
 
 async function main() {
-    while(1) {
-        const res = await subscriber.brPop(
-            commandOptions({ isolated: true }),
-            'build-queue',
-            0
-          );
-				console.log(res.element)
+    await subscriber.connect();
+
+    while (true) {
+        const res = await subscriber.brPop("build-queue", 0);
+
+        if (!res) continue;
+
+        console.log(res.element);
     }
 }
+
 main();

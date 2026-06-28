@@ -35,7 +35,7 @@ app.post("/deploy",async (req,res)=>{
     const id=generate()
     await simpleGit().clone(repoUrl,path.join(__dirname,`output/${id}`))
     const file = getALLFiles(path.join(__dirname,`output/${id}`))
-    //put this in S3
+    
     const rootFolder = path.join(__dirname, `output/${id}`);
     for (const filePath of file) {
     const relativePath = path.relative(rootFolder, filePath);
