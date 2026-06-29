@@ -8,6 +8,9 @@ The frontend runs separately and posts repository URLs to the ingestion service.
 
 ## System Overview
 
+![Walk Through](assets/stackDeploy_walkthrough.mp4)
+
+
 The system is made up of three main backend components:
 
 1. **Ingestion Service** (`Ingestion-service`)
