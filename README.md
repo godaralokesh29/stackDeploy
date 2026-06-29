@@ -1,4 +1,4 @@
-# CloudForge Deployment System
+# stackDeploy Deployment System
 
 This repository contains a simple multi-service deployment flow for Git repositories.
 It uses an ingestion service, a build/deploy worker service, and a request handler service.
@@ -79,6 +79,7 @@ Each service plays a distinct role:
 ---
 
 ## 1. Ingestion Service Architecture
+![alt text](image-1.png)
 
 ### What it does
 
