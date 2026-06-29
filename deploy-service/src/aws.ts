@@ -31,7 +31,7 @@ export async function downloadS3Folder(prefix: string) {
     Contents?.map(async ({ Key }) => {
       if (!Key) return;
 
-      const finalOutputPath = path.join(__dirname, Key);
+      const finalOutputPath = path.join(__dirname,`output/${Key}`);
 
       const dirName = path.dirname(finalOutputPath);
 
