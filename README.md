@@ -258,6 +258,17 @@ This makes the deployment pipeline reliable and decoupled.
 6. User opens `http://<id>.127.0.0.1.nip.io:3001/`.
 7. `Request-handler` serves the built app files from S3.
 
+### Deployment Status Checking
+
+The backend now stores a deployment status in Redis:
+
+- `uploaded` immediately after the source is uploaded
+- `deployed` after the build worker finishes and uploads the final build output
+
+The frontend keeps polling `GET /status?id=<id>` until the status becomes `deployed`.
+While the status is not `deployed`, the UI remains in the loading state.
+As soon as Redis reports `deployed`, the frontend shows the deployment URL and the app becomes accessible.
+
 ---
 
 ## Setup and Run

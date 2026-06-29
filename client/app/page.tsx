@@ -21,6 +21,7 @@ export default function Page() {
   const [deploymentUrl, setDeploymentUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [deploymentDuration, setDeploymentDuration] = useState(0);
+  const [deploymentId, setDeploymentId] = useState<string | null>(null);
 
   // ingestion-service listens on port 3000, not the request-handler on 3001
   const API_URL ='http://localhost:3000';
@@ -50,6 +51,34 @@ export default function Page() {
       };
     }
   }, [state]);
+
+  useEffect(() => {
+    if (!deploymentId || state !== 'loading') {
+      return;
+    }
+
+    const pollStatus = async () => {
+      try {
+        const response = await fetch(`${API_URL}/status?id=${deploymentId}`);
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+        if (data.status === 'deployed') {
+          setDeploymentUrl(`http://${deploymentId}.127.0.0.1.nip.io:3001/`);
+          setState('success');
+        }
+      } catch (err) {
+        console.error('Failed to fetch deployment status', err);
+      }
+    };
+
+    pollStatus();
+    const interval = setInterval(pollStatus, 2000);
+
+    return () => clearInterval(interval);
+  }, [deploymentId, state]);
 
   const handleDeploy = async () => {
     setError(null);
@@ -83,8 +112,8 @@ export default function Page() {
         throw new Error('Invalid response from deploy service.');
       }
 
-      setDeploymentUrl(`http://${data.id}.127.0.0.1.nip.io:3001/`);
-      setState('success');
+      setDeploymentId(data.id);
+      setState('loading');
     } catch (err) {
       setError((err as Error).message || 'Failed to create deployment.');
       setState('error');
@@ -96,6 +125,7 @@ export default function Page() {
     setRepoUrl('');
     setLoadingStep(0);
     setDeploymentUrl('');
+    setDeploymentId(null);
     setError(null);
     setDeploymentDuration(0);
   };
