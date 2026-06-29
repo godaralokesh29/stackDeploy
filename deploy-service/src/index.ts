@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import { downloadS3folder } from "./aws";
+import { downloadS3Folder } from "./aws";
 
 const subscriber = createClient();
 
@@ -8,10 +8,11 @@ async function main() {
 
     while (true) {
         const res = await subscriber.brPop("build-queue", 0);
+        console.log("Redis:", res);
 
         if (!res) continue;
 
-        await downloadS3folder(`${res.element}`)
+        await downloadS3Folder(`${res.element}`)
     }
 }
 

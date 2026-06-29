@@ -1,7 +1,15 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+
+import {
+  S3Client,
+  ListObjectsV2Command,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
+
 import fs from "fs";
+import path from "path";
+import { pipeline } from "stream/promises";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -11,36 +19,42 @@ const s3 = new S3Client({
   },
 });
 
-
-
 export async function downloadS3Folder(prefix: string) {
-    const allFiles = await s3.listObjectsV2({
-        Bucket: "stackdeploy-gitstore",
-        Prefix: prefix
-    }).promise();
-    
-    // 
-    const allPromises = allFiles.Contents?.map(async ({Key}) => {
-        return new Promise(async (resolve) => {
-            if (!Key) {
-                resolve("");
-                return;
-            }
-            const finalOutputPath = path.join(__dirname, Key);
-            const outputFile = fs.createWriteStream(finalOutputPath);
-            const dirName = path.dirname(finalOutputPath);
-            if (!fs.existsSync(dirName)){
-                fs.mkdirSync(dirName, { recursive: true });
-            }
-            s3.getObject({
-                Bucket: "stackdeploy-gitstore",
-                Key
-            }).createReadStream().pipe(outputFile).on("finish", () => {
-                resolve("");
-            })
-        })
-    }) || []
-    console.log("awaiting");
+  const { Contents } = await s3.send(
+    new ListObjectsV2Command({
+      Bucket: "stackdeploy-gitstore",
+      Prefix: prefix,
+    })
+  );
 
-    await Promise.all(allPromises?.filter(x => x !== undefined));
+  const promises =
+    Contents?.map(async ({ Key }) => {
+      if (!Key) return;
+
+      const finalOutputPath = path.join(__dirname, Key);
+
+      const dirName = path.dirname(finalOutputPath);
+
+      if (!fs.existsSync(dirName)) {
+        fs.mkdirSync(dirName, { recursive: true });
+      }
+
+      const { Body } = await s3.send(
+        new GetObjectCommand({
+          Bucket: "stackdeploy-gitstore",
+          Key,
+        })
+      );
+
+      if (!Body) return;
+
+      await pipeline(
+        Body as NodeJS.ReadableStream,
+        fs.createWriteStream(finalOutputPath)
+      );
+    }) ?? [];
+
+  console.log("awaiting");
+
+  await Promise.all(promises);
 }
