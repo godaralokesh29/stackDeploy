@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 import { downloadS3Folder } from "./aws";
-import { buildProject } from "./utils";
+import { buildProject, copyFinalBuild } from "./utils";
 
 const subscriber = createClient();
 
@@ -15,6 +15,7 @@ async function main() {
 
         await downloadS3Folder(`${res.element}`)
         await buildProject(res.element);
+        await copyFinalBuild(res.element);
     }
 }
 
