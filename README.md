@@ -24,7 +24,7 @@ Each service plays a distinct role:
 
 ## Architecture Diagram
 
-![alt text](image-1.png)
+![System Overview](assets/image-1.png)
 
 ```text
                          +---------------------+
@@ -81,7 +81,7 @@ Each service plays a distinct role:
 ---
 
 ## 1. Ingestion Service Architecture
-![alt text](image-3.png)
+![Ingestion Service Architecture](assets/image-3.png)
 
 ### What it does
 
@@ -130,7 +130,7 @@ Redis provides a simple asynchronous handoff between ingestion and build worker.
 
 ## 2. Deploy Service Architecture
 
-![alt text](image-4.png)
+![Deploy Service Architecture](assets/image-4.png)
 
 ### What it does
 
@@ -176,7 +176,7 @@ This separation keeps raw source and built site assets distinct.
 ---
 
 ## 3. Request Handler Architecture
-![alt text](image-5.png)
+![Request Handler Architecture](assets/image-5.png)
 
 ### What it does
 
